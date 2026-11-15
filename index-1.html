@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GAMING | Player Portal</title>
+  <meta name="theme-color" content="#080b16" />
+  <style>
+    :root{--bg:#080b16;--panel:#10172a;--blue:#00d9ff;--purple:#8b5cff;--text:#edf3ff;--muted:#9aa8c7}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 10%,#18234b 0,transparent 35%),radial-gradient(circle at 85% 75%,#251343 0,transparent 30%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+    .wrap{max-width:1050px;margin:auto;padding:24px}.brand{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:5px;color:white;text-shadow:0 0 18px #00d9ff66}.brand span{color:var(--blue)}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.tag{color:var(--muted);font-size:13px;letter-spacing:2px}
+    .card{background:#10172add;border:1px solid #26365c;border-radius:20px;padding:24px;box-shadow:0 0 30px #00d9ff0b;backdrop-filter:blur(10px)}
+    .auth{max-width:460px;margin:50px auto}.tabs{display:flex;gap:8px;margin-bottom:20px}.tabs button{flex:1}
+    button,input{font:inherit;border-radius:12px;padding:13px 15px}button{border:1px solid #33466e;background:#182344;color:white;cursor:pointer;font-weight:700;transition:.2s}
+    button:hover{transform:translateY(-2px);border-color:var(--blue);box-shadow:0 0 18px #00d9ff30}.primary{background:linear-gradient(100deg,#007dff,#7b35f5);border:0}
+    input{width:100%;background:#080f22;border:1px solid #2c3b60;color:white;margin:8px 0 14px;outline:none}input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #00d9ff15}
+    label{font-size:13px;color:#b8c6e6}.muted{color:var(--muted);font-size:14px;line-height:1.6}.hidden{display:none!important}
+    .dashboard{margin-top:28px}.hero{padding:32px;background:linear-gradient(120deg,#111c3c,#21133d);border-radius:20px;border:1px solid #35416d}.hero h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px}.hero h1 span{color:var(--blue)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}.tile{min-height:150px}.tile h3{margin-top:0;color:var(--blue)}.pill{display:inline-block;padding:6px 10px;border-radius:99px;background:#17294a;color:#75eaff;font-size:12px}
+    .footer{text-align:center;color:#6f7d9e;font-size:12px;margin:28px 0}.notice{min-height:20px;color:#8eeaff;font-size:13px;margin:8px 0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div><div class="brand">GAM<span>ING</span></div><div class="tag">PLAYER PORTAL • LEVEL UP</div></div>
+      <span class="pill">● ONLINE EXPERIENCE</span>
+    </header>
+
+    <section id="authCard" class="card auth">
+      <h2 id="formTitle">Welcome Player</h2>
+      <p class="muted">Create your player account or log in to enter the gaming dashboard.</p>
+      <div class="tabs"><button id="loginTab" class="primary" type="button">Login</button><button id="signupTab" type="button">Sign Up</button></div>
+      <form id="authForm">
+        <label for="username">Player name</label><input id="username" autocomplete="username" placeholder="Enter your player name" required />
+        <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters" minlength="6" required />
+        <button class="primary" id="submitBtn" type="submit" style="width:100%">Login to GAMING</button>
+        <div class="notice" id="authMsg" aria-live="polite"></div>
+      </form>
+      <p class="muted">Demo only: accounts are stored in this browser. Do not use a real or reused password.</p>
+    </section>
+
+    <main id="dashboard" class="dashboard hidden">
+      <div class="hero">
+        <div class="pill">PLAYER DASHBOARD</div>
+        <h1>Welcome back, <span id="playerName">Player</span>!</h1>
+        <p class="muted">Your next adventure starts here. Ready to level up?</p>
+        <button class="primary" id="secretBtn" type="button">⚡ SECRET BUTTON</button>
+        <button id="logoutBtn" type="button" style="margin-left:8px">Logout</button>
+        <div class="notice" id="secretMsg" aria-live="polite"></div>
+      </div>
+      <div class="grid">
+        <article class="card tile"><h3>🎮 Gaming Zone</h3><p class="muted">Explore your favorite games and discover new adventures.</p><span class="pill">COMING SOON</span></article>
+        <article class="card tile"><h3>👤 Player Profile</h3><p class="muted">Player: <strong id="profileName"></strong><br>Status: <strong>Active</strong></p><span class="pill">LEVEL 01</span></article>
+        <article class="card tile"><h3>🏆 Achievements</h3><p class="muted">Your wins and achievements will appear here.</p><span class="pill">0 UNLOCKED</span></article>
+      </div>
+    </main>
+    <div class="footer">GAMING © 2026 • Built for players</div>
+  </div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let mode = 'login';
+  const USERS_KEY = 'gaming_demo_users';
+  const SESSION_KEY = 'gaming_demo_session';
+
+  function setMode(next){
+    mode = next;
+    $('formTitle').textContent = mode === 'login' ? 'Welcome Player' : 'Create Player Account';
+    $('submitBtn').textContent = mode === 'login' ? 'Login to GAMING' : 'Create Account';
+    $('loginTab').classList.toggle('primary', mode === 'login');
+    $('signupTab').classList.toggle('primary', mode === 'signup');
+    $('password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
+    $('authMsg').textContent = '';
+  }
+  $('loginTab').addEventListener('click',()=>setMode('login'));
+  $('signupTab').addEventListener('click',()=>setMode('signup'));
+
+  function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY)||'{}')}catch{return {}}}
+  function showDashboard(name){
+    $('authCard').classList.add('hidden');$('dashboard').classList.remove('hidden');
+    $('playerName').textContent=name;$('profileName').textContent=name;
+  }
+  function showAuth(){
+    $('dashboard').classList.add('hidden');$('authCard').classList.remove('hidden');setMode('login');
+  }
+  $('authForm').addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const name=$('username').value.trim(), pass=$('password').value;
+    if(!name || pass.length<6){$('authMsg').textContent='Enter a player name and password (6+ characters).';return}
+    const users=getUsers();
+    if(mode==='signup'){
+      if(users[name]){$('authMsg').textContent='That player name already exists. Try Login.';return}
+      users[name]=pass;localStorage.setItem(USERS_KEY,JSON.stringify(users));
+      localStorage.setItem(SESSION_KEY,name);showDashboard(name);
+    }else{
+      if(users[name]!==pass){$('authMsg').textContent='Incorrect player name or password.';return}
+      localStorage.setItem(SESSION_KEY,name);showDashboard(name);
+    }
+  });
+  $('logoutBtn').addEventListener('click',()=>{localStorage.removeItem(SESSION_KEY);showAuth()});
+  $('secretBtn').addEventListener('click',()=>{
+    $('secretMsg').textContent='✨ SECRET UNLOCKED! You are now in POWER MODE. Keep gaming!';
+    document.body.style.background='radial-gradient(circle at center,#263b7a,#120c2c 55%,#050711)';
+    $('secretBtn').textContent='⚡ POWER MODE ACTIVATED';
+  });
+  const saved=localStorage.getItem(SESSION_KEY);if(saved)showDashboard(saved);
+</script>
+</body>
+</html>
